@@ -1,0 +1,29 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# API keys / secrets
+.env
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local LLM models (VERY important)
+models/
+*.gguf
+*.bin
+
+# Streamlit / Gradio temp files
+.streamlit/
+.gradio/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# VS Code settings (optional)
+.vscode/
