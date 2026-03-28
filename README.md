@@ -1,3 +1,15 @@
-# Deep-Research-Assistant
-Deep Research Assistant is an AI research tool built using Python, Gradio, and a local LLM with a complete RAG pipeline. It generates search queries, retrieves web data, and converts it into structured research reports. The project demonstrates skills in RAG architecture, prompt engineering, async search, and AI app development. 
+---
+title: Deep Research Assistant
+emoji: 🤖
+colorFrom: blue
+colorTo: purple
+sdk: gradio
+sdk_version: "4.44.0"
+app_file: app.py
+pinned: false
+---
 
+# Deep Research Assistant
+
+AI-powered research assistant using a complete RAG pipeline and local LLM (Jan-v1-4B).  
+The system generates research queries, retrieves web results, and converts them into structured research reports.
