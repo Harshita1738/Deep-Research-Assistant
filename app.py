@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 SERPER_API_KEY = os.getenv("SERPER_API_KEY")
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 # ──────────────────────────────────────────────
 # Helper: section headers per report format
@@ -97,7 +98,8 @@ class ResearchConfig:
     top_k: float = 20
     context_length: int = 4096
     search_api_key: str = os.getenv("SERPER_API_KEY", "")
-    search_engine: str = "serper"
+    tavily_api_key: str = os.getenv("TAVILY_API_KEY", "")
+    search_engine: str = "tavily" if os.getenv("TAVILY_API_KEY") else "serper"
 
 
 class DeepResearchAssistant:
@@ -156,9 +158,27 @@ class DeepResearchAssistant:
             return f"Error generating response: {str(e)}"
 
     async def search_web(self, query: str, num_results: int = 10) -> List[Dict]:
+        if self.config.search_engine == "tavily" and self.config.tavily_api_key:
+            return await self.search_tavily(query, num_results)
         if self.config.search_api_key:
             return await self.search_serper(query, num_results)
         return []
+
+    async def search_tavily(self, query: str, num_results: int) -> List[Dict]:
+        from tavily import TavilyClient
+        client = TavilyClient(api_key=self.config.tavily_api_key)
+        response = await asyncio.to_thread(
+            client.search, query=query, max_results=num_results, search_depth="basic"
+        )
+        results = []
+        for item in response.get("results", []):
+            results.append({
+                "title": item.get("title", ""),
+                "url": item.get("url", ""),
+                "snippet": item.get("content", ""),
+                "source": "web",
+            })
+        return results
 
     async def search_serper(self, query: str, num_results: int) -> List[Dict]:
         url = "https://google.serper.dev/search"
@@ -562,8 +582,8 @@ with gr.Blocks(css=CUSTOM_CSS, title="Deep Research Assistant") as demo:
 
     gr.HTML(HEADER_HTML)
 
-    if not _assistant.config.search_api_key:
-        gr.HTML('<div style="background:linear-gradient(135deg,#ff6b00,#ff0080);color:white;padding:1rem 1.5rem;border-radius:14px;margin-bottom:1rem;">⚠️ SERPER_API_KEY not found in environment. Using fallback demo results.</div>')
+    if not _assistant.config.tavily_api_key and not _assistant.config.search_api_key:
+        gr.HTML('<div style="background:linear-gradient(135deg,#ff6b00,#ff0080);color:white;padding:1rem 1.5rem;border-radius:14px;margin-bottom:1rem;">⚠️ No search API key found. Set TAVILY_API_KEY or SERPER_API_KEY in environment. Using fallback demo results.</div>')
 
     # ── Config section ──
     gr.Markdown("## ⚙️ Research Configuration")
