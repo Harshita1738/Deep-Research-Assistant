@@ -14,9 +14,7 @@ load_dotenv()
 
 SERPER_API_KEY = os.getenv("SERPER_API_KEY")
 
-# ──────────────────────────────────────────────
-# Helper: section headers per report format
-# ──────────────────────────────────────────────
+
 def section_for_format(fmt: str) -> list[str]:
     fmt = (fmt or "").strip().lower()
     if fmt == "executive":
@@ -49,9 +47,6 @@ def section_for_format(fmt: str) -> list[str]:
     return ["INTRODUCTION", "DETAILED ANALYSIS", "CONCLUSION"]
 
 
-# ──────────────────────────────────────────────
-# Post-processing: extract clean report from raw output
-# ──────────────────────────────────────────────
 def extract_final_block(text: str) -> str:
     m = re.search(r"<final>([\s\S]*?)</final>", text, flags=re.IGNORECASE)
     cleaned_text = m.group(1).strip() if m else text
@@ -85,9 +80,6 @@ def extract_final_block(text: str) -> str:
     return cleaned_text
 
 
-# ──────────────────────────────────────────────
-# Config & Core Assistant (unchanged)
-# ──────────────────────────────────────────────
 @dataclass
 class ResearchConfig:
     model_path: str = "C:/Users/lenovo/OneDrive/Desktop/OneDrive/DeepSearch AgenticAI Project/models/Jan-v1-4B-Q4_K_M.gguf"
@@ -235,17 +227,13 @@ Introduction
         return final_report
 
 
-# ──────────────────────────────────────────────
-# Global state (replaces st.session_state)
-# ──────────────────────────────────────────────
+
 _config = ResearchConfig()
 _assistant = DeepResearchAssistant(_config)
 _model_loaded = _assistant.load_model()
 
 
-# ──────────────────────────────────────────────
-# Core research runner (called by Gradio)
-# ──────────────────────────────────────────────
+
 def run_research(topic, depth, focus, timeframe, report_format, progress=gr.Progress(track_tqdm=False)):
     if not _model_loaded:
         return (
@@ -349,9 +337,6 @@ def save_json(json_str: str) -> str:
     return path
 
 
-# ──────────────────────────────────────────────
-# CSS (same Gen Z aesthetic, adapted for Gradio)
-# ──────────────────────────────────────────────
 CUSTOM_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 
@@ -530,9 +515,6 @@ button.primary:hover, #run-btn:hover {
 ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg,#ff0080,#ff00ff); }
 """
 
-# ──────────────────────────────────────────────
-# Gradio UI
-# ──────────────────────────────────────────────
 HEADER_HTML = """
 <div class="main-header">
     <h1>🔍 Deep Research Assistant</h1>
